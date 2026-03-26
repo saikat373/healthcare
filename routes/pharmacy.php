@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Phamacy\PharmacyAuthController;
+use App\Http\Controllers\Api\Phamacy\PharmacyAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'abilities:pharmacy'])->prefix('pharmacy')->group(function(){

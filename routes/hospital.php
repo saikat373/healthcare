@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Hospitals\HospitalAuthController;
+use App\Http\Controllers\Api\Hospitals\HospitalAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'abilities:hospital'])->prefix('hospital')->group(function(){

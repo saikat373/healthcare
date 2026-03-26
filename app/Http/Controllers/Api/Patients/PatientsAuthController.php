@@ -1,33 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\Phamacy;
-
+namespace App\Http\Controllers\Api\Patients;
 use App\Http\Controllers\Controller;
-use App\Models\Pharmacy\PharmacyUser;
+use App\Models\Patients\PatientUser;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class PharmacyAuthController extends Controller
+class PatientsAuthController extends Controller
 {
-
-
     /**
-     * Authenticate a pharmacy user and issue an access token.
+     * Authenticate a patient and generate an access token
      *
-     * @param \Illuminate\Http\Request $request The HTTP request containing mobile and password
-     * @return \Illuminate\Http\JsonResponse A JSON response with authentication status and access token
+     * @param Request $request The HTTP request containing patient credentials
+     * @return \Illuminate\Http\JsonResponse JSON response with authentication result
      *
-     * @throws \Illuminate\Validation\ValidationException If mobile or password validation fails
+     * @throws \Illuminate\Validation\ValidationException
      *
-     * Request body:
-     * - mobile (string, required): The pharmacy user's mobile number (10 digits)
-     * - password (string, required): The pharmacy user's password
+     * Expected request parameters:
+     * - mobile (string, required): Patient mobile number (10 digits)
+     * - password (string, required): Patient password
      *
      */
-    public function pharmacyLogin(Request $request){
-
+    public function patientLogin(Request $request){
         $validator = Validator::make($request->all(), [
             'mobile' => 'required|min:10|max:10',
             'password' => 'required'
@@ -40,23 +36,22 @@ class PharmacyAuthController extends Controller
             ], self::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $pharmacy = PharmacyUser::where('mobile', $request->mobile)->first();
-
-        if (! $pharmacy || ! Hash::check($request->password, $pharmacy->password)) {
+        $patient = PatientUser::where('mobile', $request->mobile)->first();
+        if (! $patient || ! Hash::check($request->password, $patient->password)) {
             return $this->response([
                 'status' => false,
                 'message' => 'Invalid credentials'
             ], self::HTTP_UNAUTHORIZED);
         }
 
-        $token = $pharmacy->createToken('pharmacy-token', ['pharmacy'])->plainTextToken;
+        $token = $patient->createToken('patient-token', ['patient'])->plainTextToken;
 
         return $this->response([
             'message' => 'Login successful',
             'status' => true,
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'pharmacy' => $pharmacy
+            'patient' => $patient
         ], self::HTTP_OK);
     }
 
@@ -78,18 +73,18 @@ class PharmacyAuthController extends Controller
         }
 
         try {
-            $pharmacy = new PharmacyUser();
-            $pharmacy->email = $request->email;
-            $pharmacy->first_name = $request->first_name;
-            $pharmacy->last_name = $request->last_name;
-            $pharmacy->mobile = $request->mobile;
-            $pharmacy->gender = $request->gender;
-            $pharmacy->password = Hash::make('Pharmacy@123');
+            $patient = new PatientUser();
+            $patient->email = $request->email;
+            $patient->first_name = $request->first_name;
+            $patient->last_name = $request->last_name;
+            $patient->mobile = $request->mobile;
+            $patient->gender = $request->gender;
+            $patient->password = Hash::make('Patient@123');
 
-            if($pharmacy->save()){
-                $registration_no = 'PATIENT-' . str_pad($pharmacy->id, 4, '0', STR_PAD_LEFT);
-                $pharmacy->registration_no = $registration_no;
-                $pharmacy->update();
+            if($patient->save()){
+                $registration_no = 'PATIENT-' . str_pad($patient->id, 4, '0', STR_PAD_LEFT);
+                $patient->registration_no = $registration_no;
+                $patient->update();
                 return $this->response([
                     'status'=>true,
                     'message'=>'User created successfully'

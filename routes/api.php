@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Hospitals\HospitalAuthController;
-use App\Http\Controllers\Patients\PatientsAuthController;
-use App\Http\Controllers\Phamacy\PharmacyAuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\Hospitals\HospitalAuthController;
+use App\Http\Controllers\Api\Patients\PatientsAuthController;
+use App\Http\Controllers\Api\Phamacy\PharmacyAuthController;
+use App\Http\Controllers\UserApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
     return $request->user();
 })->middleware('auth:sanctum'); */
 
-Route::post('/admin/login', [UserController::class,'adminLogin']);
+Route::post('/admin/login', [UserApiController::class,'adminLogin']);
 
 /* Hospital */
 Route::post('/hospital/login',[HospitalAuthController::class,'hospitalLogin']);

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Patients\PatientsAuthController;
+use App\Http\Controllers\Api\Patients\PatientsAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'abilities:patient'])->prefix('patient')->group(function(){

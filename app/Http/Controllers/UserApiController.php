@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller{
+class UserApiController extends Controller{
 
     /**
      * Authenticate an admin user and generate an API token.
@@ -20,21 +20,6 @@ class UserController extends Controller{
      *                                          - password (string, required): The user's password.
      *
      * @return \Illuminate\Http\JsonResponse Returns a JSON response with the following structure:
-     *                                        On success (200):
-     *                                        - status (bool): true
-     *                                        - message (string): "Login successful"
-     *                                        - access_token (string): Bearer token for authenticated requests
-     *                                        - token_type (string): "Bearer"
-     *                                        - pharmacy (User): The authenticated user object
-     *
-     *                                        On validation error (422):
-     *                                        - status (bool): false
-     *                                        - message (string): "Validation error"
-     *                                        - errors (string): First validation error message
-     *
-     *                                        On authentication failure (401):
-     *                                        - status (bool): false
-     *                                        - message (string): "Invalid credentials"
      */
     public function adminLogin(Request $request){
         $validator = Validator::make($request->all(), [
@@ -68,6 +53,24 @@ class UserController extends Controller{
             'token_type' => 'Bearer',
             'pharmacy' => $user
         ], 200);
+    }
+
+    public function logout(Request $request){
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->response([
+            'status'=>true,
+            'message'=>'Logged out successfully'
+        ], self::HTTP_OK);
+    }
+
+    public function logoutAllDevices(Request $request){
+        $request->user()->tokens()->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Logged out from all devices'
+        ],self::HTTP_OK);
     }
 
 }

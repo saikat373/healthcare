@@ -1,0 +1,43 @@
+name: Deploy to dev sever
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy_job:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install composer tools
+        run: sudo curl -sS https://getcomposer.org/installer -o composer-setup.php
+        
+      - name: Check composer installed
+        run: sudo composer
+
+      - name: Test SSH Connection
+        run: |
+          sshpass -p "${{ secrets.DEV_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_USER }}@${{ secrets.DEV_SERVER }} "echo Connected && pwd && ls -la"
+              
+      - name: Deploy via rsync
+        run: |
+          sshpass -p "${{ secrets.DEV_PASS }}" rsync -rz \
+          --no-perms --no-owner --no-group --omit-dir-times \
+          --exclude='.git' \
+          --exclude='__MACOSX' \
+          --exclude='**/.DS_Store' \
+          --exclude='storage/' \
+          --exclude='vendor/' \
+          --exclude='public/' \
+          --exclude='.env' \
+          -e "ssh -o StrictHostKeyChecking=no" \
+          ./ ${{ secrets.DEV_USER }}@${{ secrets.DEV_SERVER }}:/var/www/html/healthcare
+
+      - name: Install Packages
+        run: sudo composer install
+          
+        

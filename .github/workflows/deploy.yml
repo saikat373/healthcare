@@ -13,6 +13,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Setup PHP with Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
       - name: Install composer tools
         run: |
             curl -sS https://getcomposer.org/installer -o composer-setup.php

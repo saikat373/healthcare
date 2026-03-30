@@ -13,14 +13,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup PHP with Composer
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: composer
-
-      - name: Check Composer
-        run: composer --version
+      - name: Check PHP & Composer
+        run: |
+          php --version
+          composer --version
 
       - name: Install Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader

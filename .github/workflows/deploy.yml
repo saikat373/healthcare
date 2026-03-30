@@ -1,4 +1,4 @@
-name: Deploy to dev sever
+name: Deploy to dev server
 
 on:
   push:
@@ -19,19 +19,16 @@ jobs:
           php-version: '8.2'
           tools: composer
 
-      - name: Install composer tools
-        run: |
-            curl -sS https://getcomposer.org/installer -o composer-setup.php
-            php composer-setup.php
-            php -r "unlink('composer-setup.php');"
-        
-      - name: Check composer installed
-        run: sudo composer
+      - name: Check Composer
+        run: composer --version
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Test SSH Connection
         run: |
           sshpass -p "${{ secrets.DEV_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.DEV_USER }}@${{ secrets.DEV_SERVER }} "echo Connected && pwd && ls -la"
-              
+
       - name: Deploy via rsync
         run: |
           sshpass -p "${{ secrets.DEV_PASS }}" rsync -rz \
@@ -45,8 +42,3 @@ jobs:
           --exclude='.env' \
           -e "ssh -o StrictHostKeyChecking=no" \
           ./ ${{ secrets.DEV_USER }}@${{ secrets.DEV_SERVER }}:/var/www/html/healthcare
-
-      - name: Install Packages
-        run: sudo composer install
-          
-        

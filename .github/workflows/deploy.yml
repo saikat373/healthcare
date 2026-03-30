@@ -14,7 +14,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install composer tools
-        run: sudo curl -sS https://getcomposer.org/installer -o composer-setup.php
+        run: |
+            curl -sS https://getcomposer.org/installer -o composer-setup.php
+            php composer-setup.php
+            php -r "unlink('composer-setup.php');"
         
       - name: Check composer installed
         run: sudo composer
